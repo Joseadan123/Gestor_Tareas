@@ -3,9 +3,52 @@
 {% block title %}Inicio - Gestor de Tareas{% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="mb-3">📝 Bienvenido a tu Gestor de Tareas</h1>
-    <p class="lead">Organiza tu día de forma sencilla y productiva.</p>
-    <a href="#" class="btn btn-primary mt-3">Comenzar</a>
+<div class="row">
+    <div class="col-md-6 mx-auto">
+
+        <h2 class="text-center mb-3">📝 Gestor de Tareas</h2>
+
+        <!-- Estadísticas -->
+        {% if total > 0 %}
+        <div class="alert alert-info text-center">
+            <strong>{{ completadas }}</strong> de <strong>{{ total }}</strong> tareas completadas ✅
+        </div>
+        {% endif %}
+
+        <!-- Formulario para agregar tarea -->
+        <form action="{{ url_for('main.agregar') }}" method="POST" class="mb-4">
+            <div class="mb-3">
+                <input type="text" name="titulo" class="form-control" placeholder="Título de la tarea" required>
+            </div>
+            <div class="mb-3">
+                <textarea name="descripcion" class="form-control" rows="2" placeholder="Descripción (opcional)"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Agregar Tarea</button>
+        </form>
+
+        <!-- Lista de tareas -->
+        {% if tareas %}
+            <ul class="list-group">
+                {% for tarea in tareas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="{% if tarea.completado %}text-decoration-line-through text-muted{% endif %}">
+                                {{ tarea.titulo }}
+                            </strong><br>
+                            <small class="text-muted">{{ tarea.descripcion }}</small>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('main.completar', id=tarea.id) }}" class="btn btn-sm btn-success me-1">
+                                {% if tarea.completado %}↩️{% else %}✅{% endif %}
+                            </a>
+                            <a href="{{ url_for('main.eliminar', id=tarea.id) }}" class="btn btn-sm btn-danger">🗑️</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted mt-4">No tienes tareas aún 😴</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

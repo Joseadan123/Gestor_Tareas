@@ -1,9 +1,26 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import os
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
 
-    from .routers import main
+    # Configuración básica
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tareas.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = 'clave-secreta-123'  # necesaria para sesiones
+
+    db.init_app(app)
+
+    # Importar rutas
+    from .routes import main
     app.register_blueprint(main)
+
+    # Crear base de datos si no existe
+    with app.app_context():
+        from . import models
+        db.create_all()
 
     return app
